@@ -94,7 +94,7 @@ const animate = (timeStamp) => {
 }
     useEffect(() => {
         if(canvasCtxRef.current) return;
-        particleCount.current = canvasRef.current.clientWidth / 7.5
+        particleCount.current = Math.min(canvasRef.current.clientWidth / 7.5, 200)
 
         canvasRef.current.width = canvasRef.current.clientWidth;
         canvasRef.current.height = canvasRef.current.clientHeight;
