@@ -38,6 +38,8 @@ const Canvas = () => {
     const deltaTime = useRef(1000 / 90);
     const particleCount = useRef(100);
     const strokeStyleMap = useRef(new Map());
+    const animationId = useRef(0);
+    const wasPaused = useRef(false);
 
     const draw = () => {
         canvasCtxRef.current.clearRect(0, 0, canvasRef.current.clientWidth, canvasRef.current.clientHeight);
@@ -68,7 +70,7 @@ const quantizedKey = Math.round(key * 100) / 100;
 
 const animate = (timeStamp) => {
     // Calculate the time elapsed since the last frame
-    const delta = timeStamp - lastTime.current;
+    const delta = Math.min(100, timeStamp - lastTime.current);
 
     // Use a fixed step size for logic updates (e.g., 16.67ms for 60 FPS)
     const fixedTimeStep = 1000 / 60; 
@@ -85,7 +87,7 @@ const animate = (timeStamp) => {
     // Update lastTime for the next frame calculation
     lastTime.current = timeStamp; 
 
-    requestAnimationFrame(animate);
+    animationId.current = requestAnimationFrame(animate);
 }
     useEffect(() => {
         if(canvasCtxRef.current) return;
@@ -94,10 +96,16 @@ const animate = (timeStamp) => {
         canvasRef.current.width = canvasRef.current.clientWidth;
         canvasRef.current.height = canvasRef.current.clientHeight;
 
-        addEventListener('resize', ()=>{
+        window.addEventListener('resize', ()=>{
             canvasRef.current.width = canvasRef.current.clientWidth;
             canvasRef.current.height = canvasRef.current.clientHeight;
         });
+
+        window.addEventListener('visibilitychange', ()=>{
+            if (document.visibilityState === 'hidden') {
+            } else {
+            }
+        })
 
         canvasCtxRef.current = canvasRef.current.getContext('2d');
         canvasCtxRef.current.fillStyle = '#00BFFF';
