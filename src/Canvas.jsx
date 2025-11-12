@@ -51,12 +51,12 @@ const Canvas = () => {
                 
                 const dx = Math.abs(particles.current[k].x - particles.current[i].x) | 0;
                 const dy = Math.abs(particles.current[k].y - particles.current[i].y) | 0;
-                if(dx + dy > 300) continue;
+                if(dx + dy > 200) continue;
                 const distance =  (dx * dx + dy * dy) | 0;
                 
                 if(distance < mulResult) {
                     const key = Math.max(0.2, 1 - (distance / (mulResult)));
-                    const quantizedKey = Math.round(key * 100) / 100;
+                    const quantizedKey = (Math.round(key * 100) / 100);
 
                     if(!strokeStyleMap.current.has(quantizedKey)) {
                         strokeStyleMap.current.set(quantizedKey, `rgba(0, 191, 255, ${quantizedKey})`);
@@ -118,7 +118,7 @@ const animate = (timeStamp) => {
             particles.current.push(new Particle(Math.round(Math.random() * canvasRef.current.clientWidth) | 0,
                 Math.round(Math.random() * canvasRef.current.clientHeight) | 0,
                 3,
-                Math.ceil(Math.random() * 5 - 2.5) | 0, Math.ceil(Math.random() * 5 - 2.5) | 0, '#00BFFF'))
+                Math.round(Math.random() * 5 - 2.5) | 0, Math.round(Math.random() * 5 - 2.5) | 0, '#00BFFF'))
         }
         animate(0);
     }, [])
