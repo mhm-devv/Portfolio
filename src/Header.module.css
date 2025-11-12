@@ -1,0 +1,61 @@
+.Header {
+    width: calc(100vw - 20px);
+    height: 40px;
+    color: white;
+    font-family: 'Geist', sans-serif;
+    align-items: center;
+    display: flex;
+    padding: 10px;
+    position: fixed;
+    border-bottom: solid 1px rgb(0, 191, 255);
+    background: rgba(0, 191, 255, 0.2);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+z-index: 5;
+}
+.HeaderLabel {
+    margin-right: 40px;
+    cursor: pointer;
+    transition-duration: 0.2s;
+    user-select: none;
+    border-radius: 10px;
+}
+.HeaderLabel:hover {
+    text-decoration: underline;
+    scale: 110%;
+}
+.HeaderPfp {
+    width: 40px;
+    border-radius: 50%;
+    margin-left: 40px;
+    margin-right: 20px;
+}
+@media (max-width:540px) {
+    .HeaderPfp {
+        margin-left: 15px;
+    }
+    .HeaderLabel {
+        margin-right: 15px;
+    }
+}
+@media (max-width:400px) {
+    .Header {
+        height: 30px;
+    }
+    .HeaderLabel {
+        font-size: 14px;
+    }
+    
+}
+@media (max-width:340px) {
+    .HeaderLabel {
+        font-size: 13px;
+    }
+}
+
+@media (max-width:325px) {
+    .HeaderLabel {
+        font-size: 12px;
+    }
+}

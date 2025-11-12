@@ -1,0 +1,162 @@
+.HomeContainer {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+.PresentationContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    padding-top: 100px;
+    animation-name: ProfileInit;
+    animation-duration: 1s;
+    animation-iteration-count: 1;
+    color: white;
+    font-family: 'Geist', sans-serif;
+}
+.ProfilePicture {
+    border-radius: 50%;
+    width: 120px;
+    user-select: none;
+}
+.PresentationTitle {
+    margin: 0px;
+    margin-top: 20px;
+    font-size: 50px;
+}
+.PresentationDescription {
+    margin: 0px;
+    font-size: 30px;
+    text-align: center;
+}
+.PresentationCardsContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+.PresentationCard {
+    width: 300px;
+    padding: 20px;
+    padding-left: 30px;
+    border: solid 3px rgba(0, 191, 255);
+        background: rgba(0, 191, 255, 0.2);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    user-select: none;
+    cursor: pointer;
+    transition-duration: 0.2s;
+}
+.PresentationCard:hover {
+    scale: 104%;
+}
+.PresentationCardTitle {
+    margin-left: 8px;
+}
+.PresentationCardDescription {
+   margin: 0px;
+}
+.PresentationCardTitleContainer {
+    display: flex;
+    align-items: center;
+}
+.PresentationCardImage {
+    width: 47px;
+}
+.ContactMeContainerContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+.ContactMeContainer {
+    display: flex;
+    border: solid 1px rgba(0, 191, 255);
+    background: rgba(0, 191, 255, 0.2);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+    border-radius: 20px;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 1rem;
+    align-items: center;
+}
+.ContactMePfp {
+    width: 60px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.ContactMeDescription {
+    font-size: 16px;
+}
+.DiscordHref {
+    color: rgb(0, 191, 255);
+}
+.ProjectsContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 50px;
+}
+.Project {
+    width: min(400px, 70%);
+    border: solid 3px rgba(0, 191, 255);
+        background: rgba(0, 191, 255, 0.2);
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(5px);
+-webkit-backdrop-filter: blur(5px);
+    border-radius: 10px;
+    padding: 10px;
+    padding-left: 40px;
+    text-decoration: none;
+    color: white;
+    transition-duration: 0.2s;
+}
+.Project:hover {
+    scale: 104%;
+
+}
+.ExampleImgTitle {
+    margin-bottom: 4px;
+}
+.WebsiteImage {
+    width: 90%;
+        border: solid 2px rgba(0, 191, 255);
+
+    border-radius: 15px;
+}
+@keyframes ProfileInit {
+    0% {
+        opacity: 0%;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 100%;
+        transform: translateY(0px);
+    }
+}
+@media (max-width: 580px) {
+    .PresentationCardsContainer {
+        flex-direction: column;
+        align-items: center;
+    }
+    .PresentationCard {
+        margin-top: 10px;
+        width: calc(100vw - 80px);
+    }
+}
+@media (max-width: 360px) {
+    .ContactMeDescription {
+        font-size: 14px;
+    }
+}
