@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import styles from './Canvas.module.css'
 
-class Particle {
+export class Particle {
     constructor(x, y, radius, velocityX, velocityY, color) {
         this.radius = radius;
         this.x = x;
@@ -37,51 +37,103 @@ const Canvas = () => {
     const lastTime = useRef(0);
     const deltaTime = useRef(1000 / 90);
     const particleCount = useRef(100);
+    const grid = useRef(new Map());
+    const maximumReachDistance = 100 * 100;
+const CELL_SIZE = 100; // Use same as max reach for optimal bucketing
 
-    const draw = () => {
-        canvasCtxRef.current.clearRect(0, 0, canvasRef.current.clientWidth, canvasRef.current.clientHeight);
-        for(let i = 0; i < particles.current.length; i++) {
-            particles.current[i].update(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
-            particles.current[i].draw(canvasCtxRef.current);
-            for(let k = i + 1; k < particles.current.length; k++) {
-                const dx = particles.current[k].x - particles.current[i].x;
-                const dy = particles.current[k].y - particles.current[i].y;
-                const distance = dx * dx + dy * dy;
-                
-                if(distance < 100 * 100) {
-                    canvasCtxRef.current.strokeStyle = `rgba(0, 191, 255, ${Math.max(0.2, 1 - (distance / (100 * 100)))})`
-                    canvasCtxRef.current.beginPath();
-                    canvasCtxRef.current.moveTo(particles.current[i].x, particles.current[i].y);
-                    canvasCtxRef.current.lineTo(particles.current[k].x, particles.current[k].y);
-                    canvasCtxRef.current.stroke();
+const draw = () => {
+    const ctx = canvasCtxRef.current;
+    const canvas = canvasRef.current;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+
+    ctx.clearRect(0, 0, width, height);
+
+    // --- Spatial Grid Setup ---
+     // key: "col_row", value: array of particle indices
+
+    // Bucket particles into grid
+    for (let i = 0; i < particles.current.length; i++) {
+        const p = particles.current[i];
+        p.update(width, height);
+        p.draw(ctx);
+
+        const col = Math.floor(p.x / CELL_SIZE);
+        const row = Math.floor(p.y / CELL_SIZE);
+
+        const key = `${col}_${row}`;
+        if (!grid.current.has(key)) grid.current.set(key, []);
+        grid.current.get(key).push(i);
+    }
+
+
+    for (let i = 0; i <  particles.current.length; i++) {
+        const p = particles.current[i];
+        const col = Math.floor(p.x / CELL_SIZE);
+        const row = Math.floor(p.y / CELL_SIZE);
+
+        for (let dc = -1; dc <= 1; dc++) {
+            for (let dr = -1; dr <= 1; dr++) {
+                const neighborKey = `${col + dc}_${row + dr}`;
+                const neighbors = grid.current.get(neighborKey);
+                if (!neighbors) continue;
+
+                for (const j of neighbors) {
+                    if (j <= i) continue;
+
+                    const q = particles.current[j];
+                    const dx = q.x - p.x;
+                    const dy = q.y - p.y;
+                    const distanceSq = dx * dx + dy * dy;
+
+                    if (distanceSq < maximumReachDistance) {
+                        const opacity = Math.max(0.2, 1 - distanceSq / maximumReachDistance);
+                        ctx.strokeStyle = `rgba(0, 191, 255, ${opacity})`;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(q.x, q.y);
+                        ctx.stroke();
+                    }
                 }
             }
         }
     }
+    grid.current.clear();
+};
 
-    const animate = (timeStamp) => {
-        const delta = timeStamp - lastTime.current;
-        lastTime.current = timeStamp;
-        if(timer.current > deltaTime.current){
-            draw();
-            timer.current = 0;
-        } else {
-            timer.current += delta;
-        }
+const animate = (timeStamp) => {
+    // Calculate the time elapsed since the last frame
+    const delta = timeStamp - lastTime.current;
 
-        requestAnimationFrame(animate);
+    // Use a fixed step size for logic updates (e.g., 16.67ms for 60 FPS)
+    const fixedTimeStep = 1000 / 60; 
+
+    timer.current += delta; // Accumulate the elapsed time
+
+    // Update the simulation logic in fixed steps
+    while (timer.current >= fixedTimeStep) {
+        // Only run the expensive draw/update logic once per fixed step
+        draw(); 
+        timer.current -= fixedTimeStep;
     }
+    
+    // Update lastTime for the next frame calculation
+    lastTime.current = timeStamp; 
 
+    requestAnimationFrame(animate);
+}
     useEffect(() => {
-        particleCount.current = canvasRef.current.clientWidth / 13;
+        if(canvasCtxRef.current) return;
+        particleCount.current = canvasRef.current.clientWidth / 7.5;
 
         canvasRef.current.width = canvasRef.current.clientWidth;
         canvasRef.current.height = canvasRef.current.clientHeight;
-
-        addEventListener('resize', ()=>{
-            canvasRef.current.width = canvasRef.current.clientWidth;
-            canvasRef.current.height = canvasRef.current.clientHeight;
-        });
+const handleResize = () => {
+    canvasRef.current.width = canvasRef.current.clientWidth;
+    canvasRef.current.height = canvasRef.current.clientHeight;
+    // You may also want to recalculate particleCount here if you want it dynamic on resize
+};
+        window.addEventListener('resize', handleResize);
 
         canvasCtxRef.current = canvasRef.current.getContext('2d');
         canvasCtxRef.current.fillStyle = '#00BFFF';
@@ -94,6 +146,7 @@ const Canvas = () => {
                 Math.random() * 5 - 2.5, Math.random() * 5 - 2.5, '#00BFFF'))
         }
         animate(0);
+        return () => {window.removeEventListener('resize', handleResize)};
     }, [])
 
     return <canvas ref={canvasRef} className={styles.Canvas}></canvas>
