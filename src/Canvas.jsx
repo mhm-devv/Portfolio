@@ -39,6 +39,7 @@ const Canvas = () => {
     const particleCount = useRef(100);
     const strokeStyleMap = useRef(new Map());
     const animationId = useRef(0);
+    const mulResult = 100 * 100;
     const wasPaused = useRef(false);
 
     const draw = () => {
@@ -47,17 +48,19 @@ const Canvas = () => {
             particles.current[i].update(canvasRef.current.clientWidth, canvasRef.current.clientHeight);
             particles.current[i].draw(canvasCtxRef.current);
             for(let k = i + 1; k < particles.current.length; k++) {
-                const dx = particles.current[k].x - particles.current[i].x;
-                const dy = particles.current[k].y - particles.current[i].y;
-                const distance = dx * dx + dy * dy;
                 
-                if(distance < 100 * 100) {
-                    const key = Math.max(0.2, 1 - (distance / (100 * 100)));
-const quantizedKey = Math.round(key * 100) / 100;
+                const dx = Math.abs(particles.current[k].x - particles.current[i].x) | 0;
+                const dy = Math.abs(particles.current[k].y - particles.current[i].y) | 0;
+                if(dx + dy > 300) continue;
+                const distance =  (dx * dx + dy * dy) | 0;
+                
+                if(distance < mulResult) {
+                    const key = Math.max(0.2, 1 - (distance / (mulResult)));
+                    const quantizedKey = Math.round(key * 100) / 100;
 
-            if(!strokeStyleMap.current.has(quantizedKey)) {
-                strokeStyleMap.current.set(quantizedKey, `rgba(0, 191, 255, ${quantizedKey})`);
-            }
+                    if(!strokeStyleMap.current.has(quantizedKey)) {
+                        strokeStyleMap.current.set(quantizedKey, `rgba(0, 191, 255, ${quantizedKey})`);
+                    }
                     canvasCtxRef.current.strokeStyle = strokeStyleMap.current.get(quantizedKey);
                     canvasCtxRef.current.beginPath();
                     canvasCtxRef.current.moveTo(particles.current[i].x, particles.current[i].y);
@@ -91,7 +94,7 @@ const animate = (timeStamp) => {
 }
     useEffect(() => {
         if(canvasCtxRef.current) return;
-        particleCount.current = Math.min(200, canvasRef.current.clientWidth / 7.5);
+        particleCount.current = canvasRef.current.clientWidth / 7.5
 
         canvasRef.current.width = canvasRef.current.clientWidth;
         canvasRef.current.height = canvasRef.current.clientHeight;
@@ -112,10 +115,10 @@ const animate = (timeStamp) => {
         canvasCtxRef.current.strokeStyle = '#00BFFF';
 
         for(let i = 0; i < particleCount.current; i++) {
-            particles.current.push(new Particle(Math.random() * canvasRef.current.clientWidth,
-                Math.random() * canvasRef.current.clientHeight,
-                2.5,
-                Math.random() * 5 - 2.5, Math.random() * 5 - 2.5, '#00BFFF'))
+            particles.current.push(new Particle(Math.round(Math.random() * canvasRef.current.clientWidth) | 0,
+                Math.round(Math.random() * canvasRef.current.clientHeight) | 0,
+                3,
+                Math.ceil(Math.random() * 5 - 2.5) | 0, Math.ceil(Math.random() * 5 - 2.5) | 0, '#00BFFF'))
         }
         animate(0);
     }, [])
